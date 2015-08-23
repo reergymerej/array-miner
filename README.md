@@ -31,5 +31,3 @@ arrayMiner.find('ghosts');
 arrayMiner.clear();
 arrayMiner.count();  // 6
 ```
-
-Results are cached to allow quick subsequent lookups.
