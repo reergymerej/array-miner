@@ -24,23 +24,27 @@ var isMatch = function (element, query) {
   return found;
 };
 
-var lookup = function (query) {
-  var result = cache[query];
-  var matches;
-  
-  if (!result) {
-    matches = dataSource.filter(function (element) {
-      return isMatch(element, query);
-    });
+var dereference = function (arr) {
+  var clean = [];
+  var i, max;
 
-    if (matches.length === 1) {
-      result = matches[0];
-    } else if (matches.length > 1) {
-      result = matches;
-    }
+  for (i = 0, max = arr.length; i < max; i++) {
+    clean.push(JSON.parse(JSON.stringify(arr[i])));
   }
 
-  return (cache[query] = result);
+  return clean;
+};
+
+var lookup = function (query) {
+  var result = cache[query];
+  
+  if (!result) {
+    result = dataSource.filter(function (element) {
+      return isMatch(element, query);
+    });
+  }
+
+  return (cache[query] = dereference(result));
 };
 
 var add = function (data) {
@@ -59,7 +63,7 @@ var clear = function () {
 };
 
 var data = function () {
-  return dataSource.slice();
+  return dereference(dataSource);
 };
 
 module.exports = {

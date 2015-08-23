@@ -59,6 +59,33 @@ describe('clearing data', function () {
   });
 });
 
+describe('find', function () {
+  var DATA = [
+    { id: 1, color: 'red' },
+    { id: 2, color: 'red' },
+  ];
+
+  beforeEach(function () {
+    app.add(DATA);
+  });
+
+  afterEach(function () {
+    app.clear();
+  });
+
+  it('should find any items that have a matching field value', function () {
+    var result = app.find(2);
+    will(result[0]).beLike(DATA[1]);
+  });
+
+  xit('altering find result should not alter internal data', function () {
+    var result = app.find(2)[0];
+    result.color = 'white';
+    result = app.find(2)[0];
+    will(result.color).not.be('white');
+  });
+});
+
 describe('getting raw data', function () {
   var items = [{a: 1}, {b: 2}, {a: 99}];
   
