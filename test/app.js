@@ -3,6 +3,21 @@
 var will = require('willy').will;
 var app = require('../app.js');
 
+var generateData = function (count) {
+  var data = [];
+
+  while (count--) {
+    data.push({
+      id: data.length,
+      time: Date.now(),
+      rand: Math.random(),
+      foo: count
+    });
+  }
+
+  return data;
+};
+
 describe('sanity', function () {
   it('should load', function () {
     will(app).exist();
@@ -67,17 +82,28 @@ describe('getting raw data', function () {
   });
 });
 
-xdescribe('caching', function () {
+describe('caching', function () {
+  before(function () {
+    app.add(generateData(10000));
+  });
+
+  after(function () {
+    app.clear();
+  });
+
   it('should cache lookups', function () {
     var start, first, second;
 
-    start = process.hrtime()[1];
-    app(3);
-    first = process.hrtime()[1] - start;
+    start = process.hrtime();
+    app.find(3);
+    first = process.hrtime(start);
 
-    start = process.hrtime()[1];
-    app(3);
-    second = process.hrtime()[1] - start;
+    start = process.hrtime();
+    app.find(3);
+    second = process.hrtime(start);
+
+    second = (second[0] * 1e9 + second[1]);
+    first = (first[0] * 1e9 + first[1]);
 
     will(second).beLessThan(first);
   });
