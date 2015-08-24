@@ -1,0 +1,2 @@
+* make cache length configurable, including 0
+* make dereferencing optional (improves speed)
