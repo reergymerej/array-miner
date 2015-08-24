@@ -1,5 +1,6 @@
 'use strict';
 
+var VERSION = '0.0.3';
 var dataSource;
 var cache;
 var maxCacheLength;
@@ -124,7 +125,7 @@ module.exports = {
   data: data,
   dereference: setDereferenceOption,
   find: find,
-  version: '0.0.2',
+  version: VERSION,
 };
 
 

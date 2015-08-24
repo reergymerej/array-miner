@@ -1,6 +1,8 @@
-# array-miner 0.0.2 [![Build Status](https://travis-ci.org/reergymerej/array-miner.svg)](https://travis-ci.org/reergymerej/array-miner)
+# array-miner 0.0.3
 
 Search through an array of objects easily and efficiently.
+
+[![Build Status](https://travis-ci.org/reergymerej/array-miner.svg)](https://travis-ci.org/reergymerej/array-miner)
 
 ## Quick Start
 
