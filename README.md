@@ -1,33 +1,68 @@
 [![Build Status](https://travis-ci.org/reergymerej/array-miner.svg)](https://travis-ci.org/reergymerej/array-miner)
 
-Search through an array of objects quickly and efficiently.
+Search through an array of objects easily and efficiently.
+
+## Quick Start
 
 ```js
 var arrayMiner = require('array-miner');
 
-// add items as an array...
+arrayMiner.add([
+  { id: 1, color: 'red', type: 'foo' },
+  { id: 2, color: 'white', type: 'foo' },
+  { id: 3, type: 'bar' }
+]);
+
+arrayMiner.find('foo');
+// [ { id: 1, color: 'red', type: 'foo' },
+//   { id: 2, color: 'white', type: 'foo' } ]
+```
+
+## API
+
+### add
+```js
 arrayMiner.add([
   { foo: 123, bar: 1 },
   { apply: 1, pie: 1 },
   { 123: 'foo', 'some-key': 4 }
 ]);
 
-// ...or one at a time
 arrayMiner.add({ id: 'unique' }, { foo: 4 }, { monkey: 'foo' });
-
-arrayMiner.count();  // 6
-
-// results are returned in an array
-arrayMiner.find(4);
-// [ { '123': 'foo', 'some-key': 4 }, { foo: 4 } ]
-
-arrayMiner.find('unique');
-// [{ id: 'unique' }]
-
-arrayMiner.find('ghosts');
-// []
-
-// clear everything out
-arrayMiner.clear();
-arrayMiner.count();  // 6
 ```
+Add items as an array or as individual parameters.
+
+
+### clear
+```js
+arrayMiner.clear();
+```
+Clears out all items previously added.
+
+
+### count
+```js
+arrayMiner.count();
+```
+Returns the length of the current data.  You could use `.data().length`, but this is faster.
+
+
+### data
+```js
+arrayMiner.data();
+```
+Returns all the loaded data, dereferenced.
+
+
+### find
+```js
+arrayMiner.find('fountain of youth');
+```
+Any object in the array with a matching property value will be returned in the results.  Results are dereferenced to prevent accidental side-effects and cached to speed up subsequent searches.
+
+
+### version
+```js
+arrayMiner.version;
+```
+Check the current version.
