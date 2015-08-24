@@ -44,7 +44,15 @@ var lookup = function (query) {
     });
   }
 
-  return (cache[query] = dereference(result));
+  return result;
+};
+
+var find = function (query) {
+  var result = lookup(query);
+
+  cache[query] = dereference(result);
+
+  return result;
 };
 
 var add = function (data) {
@@ -67,9 +75,9 @@ var data = function () {
 };
 
 module.exports = {
-  version: '0.0.1',
+  version: '0.0.2',
   add: add,
-  find: lookup,
+  find: find,
   count: count,
   clear: clear,
   data: data
