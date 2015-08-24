@@ -5,6 +5,7 @@ var dataSource = [];
 
 var isMatch = function (element, query) {
   var found = false;
+  var key;
   var compare = function (value) {
     if (typeof value === 'string') {
       value = value.toLowerCase();
@@ -17,10 +18,14 @@ var isMatch = function (element, query) {
     query = query.toLowerCase();
   }
 
-  Object.keys(element).every(function (key) {
-    found = compare(element[key]);
-    return !found;
-  });
+  for (key in element) {
+    // Checking hasOwnProp slows down significantly AND
+    // we don't care when searching for values.
+    if ((found = compare(element[key]))) {
+      break;
+    }
+  }
+
   return found;
 };
 
@@ -37,7 +42,7 @@ var dereference = function (arr) {
 
 var lookup = function (query) {
   var result = cache[query];
-  
+
   if (!result) {
     result = dataSource.filter(function (element) {
       return isMatch(element, query);
