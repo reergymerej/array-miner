@@ -78,17 +78,18 @@ describe('find', function () {
     will(result[0]).beLike(DATA[1]);
   });
 
-  xit('altering find result should not alter internal data', function () {
-    var result = app.find(2)[0];
-    result.color = 'white';
-    result = app.find(2)[0];
-    will(result.color).not.be('white');
+  it('altering find result should not alter internal data', function () {
+    var result1 = app.find(2)[0];
+    var result2;
+    result1.color = 'white';
+    result2 = app.find(2)[0];
+    will(result2.color).not.be('white');
   });
 });
 
 describe('getting raw data', function () {
   var items = [{a: 1}, {b: 2}, {a: 99}];
-  
+
   beforeEach(function () {
     app.add(items);
   });
