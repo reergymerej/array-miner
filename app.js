@@ -1,7 +1,12 @@
 'use strict';
 
-var cache = {};
-var dataSource = [];
+var dataSource;
+var cache;
+
+var setDataSource = function (data) {
+  dataSource = data;
+  cache = {};
+};
 
 var isMatch = function (element, query) {
   var found = false;
@@ -64,7 +69,7 @@ var add = function (data) {
   if (arguments.length > 1) {
     data = Array.prototype.slice.apply(arguments);
   }
-  dataSource = dataSource.concat(data);
+  setDataSource(dataSource.concat(data));
 };
 
 var count = function () {
@@ -72,18 +77,20 @@ var count = function () {
 };
 
 var clear = function () {
-  dataSource = [];
+  setDataSource([]);
 };
 
 var data = function () {
   return dereference(dataSource);
 };
 
+setDataSource([]);
+
 module.exports = {
-  version: '0.0.2',
   add: add,
-  find: find,
-  count: count,
   clear: clear,
-  data: data
+  count: count,
+  data: data,
+  find: find,
+  version: '0.0.2',
 };
