@@ -2,10 +2,14 @@
 
 var dataSource;
 var cache;
+var maxCacheLength;
+var queries = [];
+var useDereferencing;
 
 var setDataSource = function (data) {
   dataSource = data;
   cache = {};
+  queries = [];
 };
 
 var isMatch = function (element, query) {
@@ -35,14 +39,18 @@ var isMatch = function (element, query) {
 };
 
 var dereference = function (arr) {
-  var clean = [];
+  var result = [];
   var i, max;
 
-  for (i = 0, max = arr.length; i < max; i++) {
-    clean.push(JSON.parse(JSON.stringify(arr[i])));
+  if (!useDereferencing) {
+    result = arr;
+  } else {
+    for (i = 0, max = arr.length; i < max; i++) {
+      result.push(JSON.parse(JSON.stringify(arr[i])));
+    }
   }
 
-  return clean;
+  return result;
 };
 
 var lookup = function (query) {
@@ -57,12 +65,25 @@ var lookup = function (query) {
   return result;
 };
 
+var updateCache = function (lastQuery, result) {
+  var query;
+
+  if (maxCacheLength === undefined || maxCacheLength > 0 ) {
+    if (queries.push(lastQuery) > maxCacheLength) {
+      query = queries.shift();
+      cache[query] = null;
+    }
+
+    cache[query] = result;
+  }
+};
+
 var find = function (query) {
   var result = lookup(query);
 
-  cache[query] = dereference(result);
+  updateCache(query);
 
-  return result;
+  return dereference(result);
 };
 
 var add = function (data) {
@@ -84,13 +105,29 @@ var data = function () {
   return dereference(dataSource);
 };
 
+var cacheLength = function (length) {
+  maxCacheLength = length;
+};
+
+var setDereferenceOption = function (use) {
+  useDereferencing = !!use;
+};
+
 setDataSource([]);
+setDereferenceOption(true);
 
 module.exports = {
   add: add,
+  cache: cacheLength,
   clear: clear,
   count: count,
   data: data,
+  dereference: setDereferenceOption,
   find: find,
   version: '0.0.2',
 };
+
+
+var app = module.exports;
+
+app.cache(0);

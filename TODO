@@ -1,2 +1,4 @@
-* make cache length configurable, including 0
-* make dereferencing optional (improves speed)
+* add tests for cache length options
+* add tests for dereferencing
+* search for a specific field
+* add query options

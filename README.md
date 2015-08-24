@@ -35,6 +35,13 @@ arrayMiner.add({ id: 'unique' }, { foo: 4 }, { monkey: 'foo' });
 ```
 
 
+### cache
+Set the number if query results to cache.  By default, this is `undefined`, which caches everything (until the cache is invalidated by another operation).
+```js
+arrayMiner.cache(10);
+```
+
+
 ### clear
 Clears out all items previously added.
 ```js
@@ -53,6 +60,13 @@ arrayMiner.count();
 Returns all the loaded data, dereferenced.
 ```js
 arrayMiner.data();
+```
+
+
+### dereference
+Turn dereferencing on/off.  When off, queries are faster, but the internal data is vulnerable.  By default, dereferencing is on.
+```js
+arrayMiner.dereference(false);
 ```
 
 
