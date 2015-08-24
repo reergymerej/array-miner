@@ -11,7 +11,7 @@
     "willy": "^1.0.1"
   },
   "name": "array-miner",
-  "description": "Search through an array of objects quickly and efficiently.",
+  "description": "Search through an array of objects easily and efficiently.",
   "version": "0.0.2",
   "directories": {
     "test": "test"

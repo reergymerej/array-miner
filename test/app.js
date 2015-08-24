@@ -89,7 +89,7 @@ describe('find', function () {
 
 describe('getting raw data', function () {
   var items = [{a: 1}, {b: 2}, {a: 99}];
-  
+
   beforeEach(function () {
     app.add(items);
   });
