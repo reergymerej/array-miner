@@ -6,6 +6,7 @@ var cache;
 var maxCacheLength;
 var queries = [];
 var useDereferencing;
+var lastResultPulledFromCache;
 
 var setDataSource = function (data) {
   dataSource = data;
@@ -54,11 +55,20 @@ var dereference = function (arr) {
   return result;
 };
 
-var lookup = function (query) {
-  var result = cache[query];
+var lookup = function (query, arr) {
+  var result;
+
+  if (!arr) {
+    result = cache[query];
+    lastResultPulledFromCache = result !== undefined;
+
+    if (!result) {
+      arr = dataSource;
+    }
+  }
 
   if (!result) {
-    result = dataSource.filter(function (element) {
+    result = arr.filter(function (element) {
       return isMatch(element, query);
     });
   }
@@ -70,19 +80,38 @@ var updateCache = function (lastQuery, result) {
   var query;
 
   if (maxCacheLength === undefined || maxCacheLength > 0 ) {
-    if (queries.push(lastQuery) > maxCacheLength) {
-      query = queries.shift();
-      cache[query] = null;
+
+    queries.push(lastQuery);
+
+    if (lastResultPulledFromCache) {
+      queries.splice(queries.indexOf(lastQuery), 1);
+
+    } else {
+
+      if (queries.length > maxCacheLength) {
+        query = queries.shift();
+        cache[query] = null;
+      }
     }
 
-    cache[query] = result;
+    if (!lastResultPulledFromCache) {
+      cache[lastQuery] = result;
+    }
   }
 };
 
-var find = function (query) {
-  var result = lookup(query);
+var find = function (arr, query) {
+  var result;
 
-  updateCache(query);
+  if (!Array.isArray(arr)) {
+    // search loaded data, not provided in args
+    query = arr;
+    arr = null;
+  }
+
+  result = lookup(query, arr);
+
+  updateCache(query, result);
 
   return dereference(result);
 };

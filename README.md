@@ -9,6 +9,19 @@ Search through an array of objects easily and efficiently.
 ```js
 var arrayMiner = require('array-miner');
 
+arrayMiner.find(
+  [
+    { id: 1, color: 'red', type: 'foo' },
+    { id: 2, color: 'white', type: 'foo' },
+    { id: 3, type: 'bar' }
+  ],
+  'foo');
+// [ { id: 1, color: 'red', type: 'foo' },
+//   { id: 2, color: 'white', type: 'foo' } ]
+```
+
+If you plan on searching through the data repeatedly, load it to take advantage of cached results.
+```js
 arrayMiner.add([
   { id: 1, color: 'red', type: 'foo' },
   { id: 2, color: 'white', type: 'foo' },
@@ -18,6 +31,7 @@ arrayMiner.add([
 arrayMiner.find('foo');
 // [ { id: 1, color: 'red', type: 'foo' },
 //   { id: 2, color: 'white', type: 'foo' } ]
+
 ```
 
 Any object with a matching property value will be returned in the results.  Results are dereferenced to prevent accidental side-effects and cached to speed up subsequent searches.  Basic loops are used in lieu of Array iterators to enhance performance.

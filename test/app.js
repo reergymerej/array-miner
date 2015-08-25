@@ -11,7 +11,8 @@ var generateData = function (count) {
       id: data.length,
       time: Date.now(),
       rand: Math.random(),
-      foo: count
+      foo: count,
+      num: count % 4
     });
   }
 
@@ -112,10 +113,12 @@ describe('getting raw data', function () {
 
 describe('caching', function () {
   before(function () {
+    app.dereference(false);
     app.add(generateData(10000));
   });
 
   after(function () {
+    app.dereference(true);
     app.clear();
   });
 
@@ -132,7 +135,16 @@ describe('caching', function () {
 
     second = (second[0] * 1e9 + second[1]);
     first = (first[0] * 1e9 + first[1]);
+    // console.log(first, second);
 
     will(second).beLessThan(first);
+  });
+});
+
+describe('ad hoc searching', function () {
+  it('should allow searching an array provided in the params', function () {
+    var arr = generateData(100);
+    var result = app.find(arr, 4);
+    will(result.length).beMoreThan(0);
   });
 });
