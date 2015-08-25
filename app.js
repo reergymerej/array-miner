@@ -127,8 +127,3 @@ module.exports = {
   find: find,
   version: VERSION,
 };
-
-
-var app = module.exports;
-
-app.cache(0);
