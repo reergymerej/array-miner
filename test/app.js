@@ -78,13 +78,38 @@ describe('find', function () {
     var result = app.find(2);
     will(result[0]).beLike(DATA[1]);
   });
+});
+
+describe('dereferencing', function () {
+  var DATA = [
+    { id: 1, color: 'red' },
+    { id: 2, color: 'red' },
+  ];
+
+  before(function () {
+    app.add(DATA);
+    app.dereference(true);
+  });
+
+  after(function () {
+    app.dereference(false);
+    app.clear();
+  });
 
   it('altering find result should not alter internal data', function () {
     var result1 = app.find(2)[0];
     var result2;
+
     result1.color = 'white';
     result2 = app.find(2)[0];
     will(result2.color).not.be('white');
+  });
+
+  it('should not affect the data when the returned stuff is messed with', function () {
+    var data = app.data();
+    var length = data.length;
+    data.splice(0, length);
+    will(app.data().length).be(length);
   });
 });
 
@@ -101,13 +126,6 @@ describe('getting raw data', function () {
 
   it('should expose the underlying data when requested', function () {
     will(app.data()).beLike(items);
-  });
-
-  it('should not affect the data when the returned stuff is messed with', function () {
-    var data = app.data();
-    var length = data.length;
-    data.splice(0, length);
-    will(app.data().length).be(length);
   });
 });
 
@@ -146,5 +164,23 @@ describe('ad hoc searching', function () {
     var arr = generateData(100);
     var result = app.find(arr, 4);
     will(result.length).beMoreThan(0);
+  });
+});
+
+describe('chaining', function () {
+  it('should work for add', function () {
+    will(app.add()).be(app);
+  });
+
+  it('should work for cache', function () {
+    will(app.cache()).be(app);
+  });
+
+  it('should work for clear', function () {
+    will(app.clear()).be(app);
+  });
+
+  it('should work for dereference', function () {
+    will(app.dereference()).be(app);
   });
 });

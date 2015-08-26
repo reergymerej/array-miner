@@ -1,6 +1,6 @@
 'use strict';
 
-var VERSION = '0.0.3';
+var VERSION = '0.0.4';
 var dataSource;
 var cache;
 var maxCacheLength;
@@ -121,6 +121,8 @@ var add = function (data) {
     data = Array.prototype.slice.apply(arguments);
   }
   setDataSource(dataSource.concat(data));
+
+  return this;
 };
 
 var count = function () {
@@ -129,6 +131,7 @@ var count = function () {
 
 var clear = function () {
   setDataSource([]);
+  return this;
 };
 
 var data = function () {
@@ -137,14 +140,16 @@ var data = function () {
 
 var cacheLength = function (length) {
   maxCacheLength = length;
+  return this;
 };
 
 var setDereferenceOption = function (use) {
   useDereferencing = !!use;
+  return this;
 };
 
 setDataSource([]);
-setDereferenceOption(true);
+setDereferenceOption(false);
 
 module.exports = {
   add: add,
