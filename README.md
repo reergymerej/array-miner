@@ -1,4 +1,4 @@
-# array-miner 0.0.3
+# array-miner 0.1.0
 
 Search through an array of objects easily and efficiently.
 
