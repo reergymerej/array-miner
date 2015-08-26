@@ -9,18 +9,27 @@ Search through an array of objects easily and efficiently.
 ```js
 var arrayMiner = require('array-miner');
 
-arrayMiner.add([
+var data = [
   { id: 1, color: 'red', type: 'foo' },
   { id: 2, color: 'white', type: 'foo' },
   { id: 3, type: 'bar' }
-]);
+];
 
-arrayMiner.find('foo');
+arrayMiner.find(data , 'foo');
 // [ { id: 1, color: 'red', type: 'foo' },
 //   { id: 2, color: 'white', type: 'foo' } ]
 ```
 
-Any object with a matching property value will be returned in the results.  Results are dereferenced to prevent accidental side-effects and cached to speed up subsequent searches.  Basic loops are used in lieu of Array iterators to enhance performance.
+If you plan on searching through the data repeatedly, load it with `add`.
+```js
+arrayMiner.add(data).find('foo');
+// [ { id: 1, color: 'red', type: 'foo' },
+//   { id: 2, color: 'white', type: 'foo' } ]
+
+```
+
+For more options and examples, check out the unit tests in `test/app.js` or the API.
+
 
 ## API
 
@@ -34,13 +43,6 @@ arrayMiner.add([
 ]);
 
 arrayMiner.add({ id: 'unique' }, { foo: 4 }, { monkey: 'foo' });
-```
-
-
-### cache
-Set the number if query results to cache.  By default, this is `undefined`, which caches everything (until the cache is invalidated by another operation).
-```js
-arrayMiner.cache(10);
 ```
 
 
@@ -65,17 +67,46 @@ arrayMiner.data();
 ```
 
 
-### dereference
-Turn dereferencing on/off.  When off, queries are faster, but the internal data is vulnerable.  By default, dereferencing is on.
-```js
-arrayMiner.dereference(false);
-```
-
-
 ### find
 Any object in the array with a matching property value will be returned in the results.  Comparison is done with `===`.
 ```js
 arrayMiner.find('fountain of youth');
+```
+
+
+### options
+Set or get options.  This method is chainable.
+```js
+// set an option
+arrayMiner.options('maxCacheLength', 100);
+
+// get an option
+arrayMiner.options('maxCacheLength');
+
+// set multiple options
+arrayMiner.options({
+  maxCacheLength: 100,
+  dereferenceResults: true
+});
+
+// get all options
+arrayMiner.options();
+```
+
+#### Option Descriptions
+
+**dereferenceResults**
+
+Turn dereferencing on/off.  When off, queries are faster, but results are returned by reference.  By default, dereferencing is `false`.
+```js
+arrayMiner.dereference(true);
+```
+
+**cache**
+
+Set the number if query results to cache.  By default, this is `undefined`, which caches everything (until the cache is invalidated by another operation).
+```js
+arrayMiner.cache(10);
 ```
 
 

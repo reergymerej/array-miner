@@ -11,7 +11,8 @@ var generateData = function (count) {
       id: data.length,
       time: Date.now(),
       rand: Math.random(),
-      foo: count
+      foo: count,
+      num: count % 4
     });
   }
 
@@ -77,13 +78,38 @@ describe('find', function () {
     var result = app.find(2);
     will(result[0]).beLike(DATA[1]);
   });
+});
+
+describe('dereferencing', function () {
+  var DATA = [
+    { id: 1, color: 'red' },
+    { id: 2, color: 'red' },
+  ];
+
+  before(function () {
+    app.add(DATA);
+    app.options('dereferenceResults', true);
+  });
+
+  after(function () {
+    app.options('dereferenceResults', false);
+    app.clear();
+  });
 
   it('altering find result should not alter internal data', function () {
     var result1 = app.find(2)[0];
     var result2;
+
     result1.color = 'white';
     result2 = app.find(2)[0];
     will(result2.color).not.be('white');
+  });
+
+  it('should not affect the data when the returned stuff is messed with', function () {
+    var data = app.data();
+    var length = data.length;
+    data.splice(0, length);
+    will(app.data().length).be(length);
   });
 });
 
@@ -100,13 +126,6 @@ describe('getting raw data', function () {
 
   it('should expose the underlying data when requested', function () {
     will(app.data()).beLike(items);
-  });
-
-  it('should not affect the data when the returned stuff is messed with', function () {
-    var data = app.data();
-    var length = data.length;
-    data.splice(0, length);
-    will(app.data().length).be(length);
   });
 });
 
@@ -132,7 +151,50 @@ describe('caching', function () {
 
     second = (second[0] * 1e9 + second[1]);
     first = (first[0] * 1e9 + first[1]);
+    // console.log(first, second);
 
     will(second).beLessThan(first);
+  });
+});
+
+describe('ad hoc searching', function () {
+  it('should allow searching an array provided in the params', function () {
+    var arr = generateData(100);
+    var result = app.find(arr, 4);
+    will(result.length).beMoreThan(0);
+  });
+});
+
+describe('chaining', function () {
+  it('should work for add', function () {
+    will(app.add()).be(app);
+  });
+
+  it('should work for clear', function () {
+    will(app.clear()).be(app);
+  });
+});
+
+describe('options', function () {
+  describe('getting', function () {
+    it('should return all options when no args', function () {
+      will(app.options()).have('dereferenceResults');
+    });
+
+    it('should return the current value when passed one string', function () {
+      will(app.options('dereferenceResults')).be(false);
+    });
+  });
+
+  describe('setting', function () {
+    it('should set the option when two args', function () {
+      will(app.options('dereferenceResults', true).options('dereferenceResults')).be(true);
+      app.options('dereferenceResults', false);
+    });
+
+    it('should set several options when passed a single object', function () {
+      var opts = { foo: 1, bar: 2 };
+      will(app.options(opts).options()).have('foo', 'bar');
+    });
   });
 });

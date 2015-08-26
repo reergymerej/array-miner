@@ -1,11 +1,15 @@
 'use strict';
 
-var VERSION = '0.0.3';
+var VERSION = '0.1.0';
 var dataSource;
 var cache;
-var maxCacheLength;
 var queries = [];
-var useDereferencing;
+var lastResultPulledFromCache;
+
+var OPTIONS = {
+  dereferenceResults: false,
+  maxCacheLength: undefined
+};
 
 var setDataSource = function (data) {
   dataSource = data;
@@ -39,26 +43,39 @@ var isMatch = function (element, query) {
   return found;
 };
 
+var clonePOJO = function (pojo) {
+  return JSON.parse(JSON.stringify(pojo));
+};
+
 var dereference = function (arr) {
   var result = [];
   var i, max;
 
-  if (!useDereferencing) {
+  if (!OPTIONS.dereferenceResults) {
     result = arr;
   } else {
     for (i = 0, max = arr.length; i < max; i++) {
-      result.push(JSON.parse(JSON.stringify(arr[i])));
+      result.push(clonePOJO(arr[i]));
     }
   }
 
   return result;
 };
 
-var lookup = function (query) {
-  var result = cache[query];
+var lookup = function (query, arr) {
+  var result;
+
+  if (!arr) {
+    result = cache[query];
+    lastResultPulledFromCache = result !== undefined;
+
+    if (!result) {
+      arr = dataSource;
+    }
+  }
 
   if (!result) {
-    result = dataSource.filter(function (element) {
+    result = arr.filter(function (element) {
       return isMatch(element, query);
     });
   }
@@ -69,20 +86,39 @@ var lookup = function (query) {
 var updateCache = function (lastQuery, result) {
   var query;
 
-  if (maxCacheLength === undefined || maxCacheLength > 0 ) {
-    if (queries.push(lastQuery) > maxCacheLength) {
-      query = queries.shift();
-      cache[query] = null;
+  if (OPTIONS.maxCacheLength === undefined || OPTIONS.maxCacheLength > 0 ) {
+
+    queries.push(lastQuery);
+
+    if (lastResultPulledFromCache) {
+      queries.splice(queries.indexOf(lastQuery), 1);
+
+    } else {
+
+      if (queries.length > OPTIONS.maxCacheLength) {
+        query = queries.shift();
+        cache[query] = null;
+      }
     }
 
-    cache[query] = result;
+    if (!lastResultPulledFromCache) {
+      cache[lastQuery] = result;
+    }
   }
 };
 
-var find = function (query) {
-  var result = lookup(query);
+var find = function (arr, query) {
+  var result;
 
-  updateCache(query);
+  if (!Array.isArray(arr)) {
+    // search loaded data, not provided in args
+    query = arr;
+    arr = null;
+  }
+
+  result = lookup(query, arr);
+
+  updateCache(query, result);
 
   return dereference(result);
 };
@@ -92,6 +128,8 @@ var add = function (data) {
     data = Array.prototype.slice.apply(arguments);
   }
   setDataSource(dataSource.concat(data));
+
+  return this;
 };
 
 var count = function () {
@@ -100,6 +138,7 @@ var count = function () {
 
 var clear = function () {
   setDataSource([]);
+  return this;
 };
 
 var data = function () {
@@ -107,15 +146,58 @@ var data = function () {
 };
 
 var cacheLength = function (length) {
-  maxCacheLength = length;
+  deprecated('Use options(maxCacheLength, ' + length + ') instead of cacheLength(' + length + ').');
+  return this.options('maxCacheLength', length);
 };
 
 var setDereferenceOption = function (use) {
-  useDereferencing = !!use;
+  deprecated('Use options(\'dereferenceResults\', ' + !!use + ') instead of dereference(' + !!use + ').');
+  return options('dereferenceResults', use);
+};
+
+var deprecated = function(message) {
+  console.warn('Deprecation Warning: %s', message);
+};
+
+var options = function (option, value) {
+  var result;
+  if (arguments.length === 0) {
+    result = getOptions();
+
+  } else if (arguments.length === 1) {
+    if (typeof option === 'object') {
+      result = setOptions.apply(this, [option]);
+    } else {
+      result = OPTIONS[option];
+    }
+
+  } else {
+    result = setOptions.apply(this, [option, value]);
+  }
+
+  return result;
+};
+
+var getOptions = function () {
+  return clonePOJO(OPTIONS);
+};
+
+var setOptions = function (option, value) {
+  var obj;
+
+  if (typeof option === 'object') {
+    obj = option;
+    Object.keys(obj).forEach(function (option) {
+      OPTIONS[option] = obj[option];
+    });
+  } else {
+    OPTIONS[option] = value;
+  }
+
+  return this;
 };
 
 setDataSource([]);
-setDereferenceOption(true);
 
 module.exports = {
   add: add,
@@ -125,10 +207,6 @@ module.exports = {
   data: data,
   dereference: setDereferenceOption,
   find: find,
+  options: options,
   version: VERSION,
 };
-
-
-var app = module.exports;
-
-app.cache(0);
