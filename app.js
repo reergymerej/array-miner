@@ -146,14 +146,13 @@ var data = function () {
 };
 
 var cacheLength = function (length) {
-  OPTIONS.maxCacheLength = length;
-  return this;
+  deprecated('Use options(maxCacheLength, ' + length + ') instead of cacheLength(' + length + ').');
+  return this.options('maxCacheLength', length);
 };
 
 var setDereferenceOption = function (use) {
-  deprecated('Use set(\'dereference\', ' + !!use + ') instead of dereference(' + !!use + ').');
-  OPTIONS.dereferenceResults = !!use;
-  return this;
+  deprecated('Use options(\'dereferenceResults\', ' + !!use + ') instead of dereference(' + !!use + ').');
+  return options('dereferenceResults', use);
 };
 
 var deprecated = function(message) {
@@ -199,7 +198,6 @@ var setOptions = function (option, value) {
 };
 
 setDataSource([]);
-setDereferenceOption(false);
 
 module.exports = {
   add: add,

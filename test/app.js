@@ -88,11 +88,11 @@ describe('dereferencing', function () {
 
   before(function () {
     app.add(DATA);
-    app.dereference(true);
+    app.options('dereferenceResults', true);
   });
 
   after(function () {
-    app.dereference(false);
+    app.options('dereferenceResults', false);
     app.clear();
   });
 
@@ -131,12 +131,10 @@ describe('getting raw data', function () {
 
 describe('caching', function () {
   before(function () {
-    app.dereference(false);
     app.add(generateData(10000));
   });
 
   after(function () {
-    app.dereference(true);
     app.clear();
   });
 
@@ -172,16 +170,8 @@ describe('chaining', function () {
     will(app.add()).be(app);
   });
 
-  it('should work for cache', function () {
-    will(app.cache()).be(app);
-  });
-
   it('should work for clear', function () {
     will(app.clear()).be(app);
-  });
-
-  it('should work for dereference', function () {
-    will(app.dereference()).be(app);
   });
 });
 

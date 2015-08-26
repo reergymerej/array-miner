@@ -44,13 +44,6 @@ arrayMiner.add({ id: 'unique' }, { foo: 4 }, { monkey: 'foo' });
 ```
 
 
-### cache
-Set the number if query results to cache.  By default, this is `undefined`, which caches everything (until the cache is invalidated by another operation).
-```js
-arrayMiner.cache(10);
-```
-
-
 ### clear
 Clears out all items previously added.
 ```js
@@ -72,17 +65,46 @@ arrayMiner.data();
 ```
 
 
-### dereference
-Turn dereferencing on/off.  When off, queries are faster, but results are returned by reference.  By default, dereferencing is off.
-```js
-arrayMiner.dereference(true);
-```
-
-
 ### find
 Any object in the array with a matching property value will be returned in the results.  Comparison is done with `===`.
 ```js
 arrayMiner.find('fountain of youth');
+```
+
+
+### options
+Set or get options.  This method is chainable.
+```js
+// set an option
+arrayMiner.options('maxCacheLength', 100);
+
+// get an option
+arrayMiner.options('maxCacheLength');
+
+// set multiple options
+arrayMiner.options({
+  maxCacheLength: 100,
+  dereferenceResults: true
+});
+
+// get all options
+arrayMiner.options();
+```
+
+#### Option Descriptions
+
+**dereferenceResults**
+
+Turn dereferencing on/off.  When off, queries are faster, but results are returned by reference.  By default, dereferencing is `false`.
+```js
+arrayMiner.dereference(true);
+```
+
+**cache**
+
+Set the number if query results to cache.  By default, this is `undefined`, which caches everything (until the cache is invalidated by another operation).
+```js
+arrayMiner.cache(10);
 ```
 
 

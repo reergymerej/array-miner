@@ -2,4 +2,5 @@
 * search for a specific field
 * add query options
 * add ability to set all options at once
-* update readme to show how to set options
+* update readme to show how to set/get options
+* remove deprecated methods from readme
