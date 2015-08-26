@@ -1,12 +1,15 @@
 'use strict';
 
-var VERSION = '0.0.4';
+var VERSION = '0.1.0';
 var dataSource;
 var cache;
-var maxCacheLength;
 var queries = [];
-var useDereferencing;
 var lastResultPulledFromCache;
+
+var OPTIONS = {
+  dereferenceResults: false,
+  maxCacheLength: undefined
+};
 
 var setDataSource = function (data) {
   dataSource = data;
@@ -40,15 +43,19 @@ var isMatch = function (element, query) {
   return found;
 };
 
+var clonePOJO = function (pojo) {
+  return JSON.parse(JSON.stringify(pojo));
+};
+
 var dereference = function (arr) {
   var result = [];
   var i, max;
 
-  if (!useDereferencing) {
+  if (!OPTIONS.dereferenceResults) {
     result = arr;
   } else {
     for (i = 0, max = arr.length; i < max; i++) {
-      result.push(JSON.parse(JSON.stringify(arr[i])));
+      result.push(clonePOJO(arr[i]));
     }
   }
 
@@ -79,7 +86,7 @@ var lookup = function (query, arr) {
 var updateCache = function (lastQuery, result) {
   var query;
 
-  if (maxCacheLength === undefined || maxCacheLength > 0 ) {
+  if (OPTIONS.maxCacheLength === undefined || OPTIONS.maxCacheLength > 0 ) {
 
     queries.push(lastQuery);
 
@@ -88,7 +95,7 @@ var updateCache = function (lastQuery, result) {
 
     } else {
 
-      if (queries.length > maxCacheLength) {
+      if (queries.length > OPTIONS.maxCacheLength) {
         query = queries.shift();
         cache[query] = null;
       }
@@ -139,12 +146,55 @@ var data = function () {
 };
 
 var cacheLength = function (length) {
-  maxCacheLength = length;
+  OPTIONS.maxCacheLength = length;
   return this;
 };
 
 var setDereferenceOption = function (use) {
-  useDereferencing = !!use;
+  deprecated('Use set(\'dereference\', ' + !!use + ') instead of dereference(' + !!use + ').');
+  OPTIONS.dereferenceResults = !!use;
+  return this;
+};
+
+var deprecated = function(message) {
+  console.warn('Deprecation Warning: %s', message);
+};
+
+var options = function (option, value) {
+  var result;
+  if (arguments.length === 0) {
+    result = getOptions();
+
+  } else if (arguments.length === 1) {
+    if (typeof option === 'object') {
+      result = setOptions.apply(this, [option]);
+    } else {
+      result = OPTIONS[option];
+    }
+
+  } else {
+    result = setOptions.apply(this, [option, value]);
+  }
+
+  return result;
+};
+
+var getOptions = function () {
+  return clonePOJO(OPTIONS);
+};
+
+var setOptions = function (option, value) {
+  var obj;
+
+  if (typeof option === 'object') {
+    obj = option;
+    Object.keys(obj).forEach(function (option) {
+      OPTIONS[option] = obj[option];
+    });
+  } else {
+    OPTIONS[option] = value;
+  }
+
   return this;
 };
 
@@ -159,5 +209,6 @@ module.exports = {
   data: data,
   dereference: setDereferenceOption,
   find: find,
+  options: options,
   version: VERSION,
 };

@@ -184,3 +184,27 @@ describe('chaining', function () {
     will(app.dereference()).be(app);
   });
 });
+
+describe('options', function () {
+  describe('getting', function () {
+    it('should return all options when no args', function () {
+      will(app.options()).have('dereferenceResults');
+    });
+
+    it('should return the current value when passed one string', function () {
+      will(app.options('dereferenceResults')).be(false);
+    });
+  });
+
+  describe('setting', function () {
+    it('should set the option when two args', function () {
+      will(app.options('dereferenceResults', true).options('dereferenceResults')).be(true);
+      app.options('dereferenceResults', false);
+    });
+
+    it('should set several options when passed a single object', function () {
+      var opts = { foo: 1, bar: 2 };
+      will(app.options(opts).options()).have('foo', 'bar');
+    });
+  });
+});
