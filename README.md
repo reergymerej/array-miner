@@ -28,6 +28,8 @@ arrayMiner.add(data).find('foo');
 
 ```
 
+For more options and examples, check out the unit tests in `test/app.js` or the API.
+
 
 ## API
 
